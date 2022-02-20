@@ -1,0 +1,3 @@
+[submodule "webapp-interface"]
+	path = webapp-interface
+	url = https://github.com/naveenmoto/copernicus.git
