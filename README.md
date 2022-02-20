@@ -50,9 +50,6 @@
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -62,7 +59,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#known issues">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -87,41 +84,56 @@ Codebase for performing autonomous navigation with the volta. The navigation goa
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+This project has to be cloned on the Xavier which is on the volta. The codebase requires Ubuntu 18.04 + ROS1 melodic (the Xavier on the volta normally has this configuration). 
 
 ### Installation
+1. Create a ROS1 workspace \
+  [Creating a catkin workspace](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+2. Clone the repository inside the source folder of the workspace
+  ```
+  https://github.com/Varghese-Kuruvilla/Volta-Navigation.git
 
+  ```
+3. Install the required packages
+  ```
+  rosdep install --from-paths src --ignore-src -r -y
+  ```
+
+**NOTE:** The volta_hardware package hasn't been included in this repository since the code is proprietary. The Xavier should already contain this folder and this should be added to the source folder of the workspace.
+
+4. Build the workspace and source the setup file
+```
+catkin build
+source devel/setup.bash
+```
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+1. Follow the instructions of the webapp-interface repository to launch the webapp. 
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+2. Bringup the robot:
+```
+roslaunch volta_base bringup.launch
+```
+On successful bringup, lights on either side of the volta should glow green.Point 1 of the Known Issues section addresses the most common reason for the failure of bringup.
+
+3. Launch the sensors(Currently we are using only the rplidar):
+```
+roslaunch volta_base sensors.launch
+```
+
+4. Launch the node which performs point to point navigation(It directly accepts goals from the webapp)
+```
+roslaunch autonomy send_goals.launch
+```
+
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
@@ -130,12 +142,8 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 
 <!-- ROADMAP -->
-## Roadmap
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+## Known Issues
+1. On startup udev-rules aren't applied properly. As a result the port names **/dev/mcu** and **/dev/rplidar** aren't configured properly. The user might have to manually change the port names on Line 124 of the serialMain.cpp file(located in the volta_hardware folder) and in the sensors.launch file
 
 See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
 
