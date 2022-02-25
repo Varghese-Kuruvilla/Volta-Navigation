@@ -130,8 +130,10 @@ roslaunch volta_base sensors.launch
 roslaunch autonomy send_goals.launch
 ```
 
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+5. To teleoperate the volta using the valve controllers:
+```
+roslaunch teleop_node teleop_node.launch  
+```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -140,6 +142,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Known Issues
 1. On startup udev-rules aren't applied properly. As a result the port names **/dev/mcu** and **/dev/rplidar** aren't configured properly. The user might have to manually change the port names on Line 124 of the serialMain.cpp file(located in the volta_hardware folder) and in the sensors.launch file
+
 
 See the [open issues](https://github.com/Varghese-Kuruvilla/Volta-Navigation/issues) for a full list of proposed features (and known issues).
 
