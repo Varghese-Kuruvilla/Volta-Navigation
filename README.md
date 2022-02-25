@@ -112,7 +112,7 @@ source devel/setup.bash
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-1. Follow the instructions of the webapp-interface repository to launch the webapp. 
+1. Follow the instructions on the webapp-interface repository (demo branch) to launch the webapp. 
 
 2. Bringup the robot:
 ```
