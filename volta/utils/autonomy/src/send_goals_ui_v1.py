@@ -16,6 +16,7 @@ class Autonomy():
         self.goal_status = True #Flag to indicate that the vehicle is capable of accepting goals
         #Subscribe to /coord
         rospy.Subscriber('coord',String, self.ui_callback)
+        self.pub_status = rospy.Publisher('status', String, queue_size=10)
         self.client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
         wait = self.client.wait_for_server(rospy.Duration(5.0))
         if not wait:
@@ -33,7 +34,10 @@ class Autonomy():
         msg = data.data
         msg = json.loads(msg)
         self.autonomy_flag = msg['autonomy']
-        if(msg['autonomy'] == True and self.goal_status == True):
+        if(msg['stop'] == True):
+            self.client.cancel_all_goals()
+            self.goal_status = True
+        elif(msg['autonomy'] == True and self.goal_status == True):
             latlong = msg['latlong']
             latlong = latlong.split(',')
             self.map_x = float(latlong[0])
@@ -44,7 +48,6 @@ class Autonomy():
 
     def active_cb(self):
         rospy.loginfo("Goal pose" + str(self.map_x) + str(self.map_y) + "is being processed")
-    
 
     # def feedback_cb(self, feedback):
     #     # rospy.loginfo("Feedback:", + str(feedback))
@@ -52,27 +55,39 @@ class Autonomy():
     
 
     def done_cb(self,status,result):
-        if status == 2:
-            rospy.loginfo("Goal pose received a cancel requiest after it started executing, completed execution")
-            # rospy.loginfo("Goal pose "+str(self.goal_cnt)+" received a cancel request after it started executing, completed execution!")
+        if status == 1:
+            rospy.loginfo('Goal is being processed by the action server')
+            data = json.dumps({'id':4})
+            self.pub_status(data)
 
-        if status == 3:
+        if status == 2:
+            rospy.loginfo("Goal pose received a cancel request after it started executing, completed execution")
+            data = json.dumps({'id':2}) #Publish status back to the webapp
+            self.pub_status.publish(data)
+            return 
+            
+        elif status == 3:
             rospy.loginfo("Goal pose reached")
+            data = json.dumps({'id':3})
+            self.pub_status.publish(data)
             self.goal_status = True
             return
 
-        if status == 4:
+        elif status == 4:
             # rospy.loginfo("Goal pose "+str(self.goal_cnt)+" was aborted by the Action Server")
             rospy.loginfo("Goal pose was aborted by the Action Server")
+            data = json.dumps({'id':1})
+            self.pub_status.publish(data)
+            self.goal_status = True
             return
 
-        if status == 5:
+        elif status == 5:
             # rospy.loginfo("Goal pose "+str(self.goal_cnt)+" has been rejected by the Action Server")
             rospy.loginfo("Goal pose has been rejected by the Action server")
             # rospy.signal_shutdown("Goal pose "+str(self.goal_cnt)+" rejected, shutting down!")
             return
 
-        if status == 8:
+        elif status == 8:
             # rospy.loginfo("Goal pose "+str(self.goal_cnt)+" received a cancel request before it started executing, successfully cancelled!")
             rospy.loginfo("Goal pose received a cancel request beore it started executing, successfully cancelled")
     

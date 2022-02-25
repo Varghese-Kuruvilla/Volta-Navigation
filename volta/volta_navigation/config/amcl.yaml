@@ -26,9 +26,9 @@ resample_interval: 1
 transform_tolerance: 1.0
 recovery_alpha_slow: 0.0
 recovery_alpha_fast: 0.0
-initial_pose_x: 0.0
-initial_pose_y: 0.0
-initial_pose_a: 0.0
+initial_pose_x: -0.6
+initial_pose_y: -4.5
+initial_pose_a: 1.57
 
 
 odom_frame_id: odom
